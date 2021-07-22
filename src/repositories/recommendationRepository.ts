@@ -17,17 +17,47 @@ export async function initializeVote(songId: number){
     return vote.rows[0];
 }
 
-export async function upvote(songId: number){
+export async function vote(songId: number, type: string){
 
     const targetSong = await connection.query(
         `SELECT * FROM votes
         WHERE "songId" = $1`, [songId]
     );
 
-    const quantity = targetSong.rows[0].quantity;
+    const quantity = targetSong.rows[0]?.quantity;
 
-    const vote = await connection.query(
-        `UPDATE votes SET quantity = $1
-        WHERE "songId" = $2`, [quantity+1, songId]
-    );
+    if(!quantity && quantity !== 0){
+        return false;
+    }
+
+    let vote;
+
+    if(type === "upvote"){
+        vote = await connection.query(
+            `UPDATE votes SET quantity = $1
+            WHERE "songId" = $2 RETURNING *`, [quantity+1, songId]
+        );
+    } else {
+
+        if(quantity===-5){
+
+            const deleteSong = await connection.query(
+                `DELETE FROM songs WHERE id = $1`, [songId]
+            );
+
+            const deleteVotes = await connection.query(
+                `DELETE FROM votes WHERE "songId" = $1`, [songId]
+            );
+
+            return "deleted";
+
+        } else {
+            vote = await connection.query(
+                `UPDATE votes SET quantity = $1
+                WHERE "songId" = $2 RETURNING *`, [quantity-1, songId]
+            );
+        }    
+    }
+
+    return vote?.rows[0];
 }

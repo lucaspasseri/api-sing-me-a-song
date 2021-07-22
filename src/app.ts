@@ -11,6 +11,8 @@ app.get("/test", testController.testing);
 
 app.post("/recommendations", recomendationController.create);
 
-app.put("/recommendations/:id/upvote", recomendationController.upvote);
+app.post("/recommendations/:id/upvote", recomendationController.vote);
+
+app.post("/recommendations/:id/downvote", recomendationController.vote);
 
 export default app;

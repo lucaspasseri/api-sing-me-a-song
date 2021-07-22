@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import * as recommendationService from "../services/recommendationService";
-import * as recommendationRepository from "../repositories/recommendationRepository";
 import { recommendationSchema } from "../schemas/recommendationSchema";
 
 export async function create(req: Request, res: Response){
@@ -11,18 +10,19 @@ export async function create(req: Request, res: Response){
 
         const {name, youtubeLink} = req.body;
 
-        const sucess = recommendationService.newOne(name, youtubeLink);
-        if(!sucess){
+        const success = await recommendationService.newOne(name, youtubeLink);
+
+        if(!success){
             return res.sendStatus(501);
         }
-        res.sendStatus(201);
+        res.send(success);
     } catch(err){
         console.log(err);
         res.sendStatus(500);
     }
 }
 
-export async function upvote(req: Request, res: Response){
+export async function vote(req: Request, res: Response){
     try {
         
         const songId = parseInt(req.params.id);
@@ -31,9 +31,13 @@ export async function upvote(req: Request, res: Response){
             return res.sendStatus(400);
         }
 
-        recommendationRepository.upvote(songId);
+        const success = await recommendationService.vote(songId, req.path);
 
-        res.sendStatus(200);
+        if(!success){
+            return res.sendStatus(400);
+        } 
+
+        res.send(success);
     } catch(err){
         console.log(err);
         res.sendStatus(500);

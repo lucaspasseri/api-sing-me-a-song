@@ -7,5 +7,21 @@ export async function newOne(name: string, youtubeLink: string){
     const songId = newSong.id;
 
     const initializeVote = await recommendationRepository.initializeVote(songId);
-    return true;
+    return newSong;
+}
+
+export async function vote(songId: number, path: string){
+    const pathArray = path.split("/");
+
+    let type;
+
+    if(pathArray.includes("upvote")){
+        type = "upvote";
+    } else {
+        type = "downvote";
+    }
+
+    const success = await recommendationRepository.vote(songId, type);
+
+    return success;
 }
