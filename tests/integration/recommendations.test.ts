@@ -1,3 +1,4 @@
+import { any } from "joi";
 import supertest from "supertest";
 import app from "../../src/app";
 import "../../src/setup";
@@ -102,7 +103,9 @@ describe("POST /recommendations/:id/downvote", () => {
         expect(response.status).toBe(200);
     });
 
-    it("should answer with status 200 and text 'deleted' when a song get vote quantity less than -5, then this song get deleted.", async () => {
+    it(`should answer with status 200 and 
+        text 'deleted' when a song get vote quantity less than -5,
+        then this song get deleted.`, async () => {
 
         const body = validRecommendation();
 
@@ -145,6 +148,78 @@ describe("GET /recommendations/random", () => {
         const response = await supertest(app).get("/recommendations/random");
 
         expect(response.status).toBe(200);
+    });
+});
+
+describe("GET /recommendations/top/:amount", () => {
+
+    it("should answer with status 400 for a invalid params.", async () => {
+
+        const response = await supertest(app).get("/recommendations/top/a");
+        expect(response.status).toBe(400);
+    });
+
+    it(`should answer with status 200 and
+        an empty array if no song was found on database.`, async () => {
+
+        const response = await supertest(app).get("/recommendations/top/10");
+
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual(expect.arrayContaining([]));
+    });
+
+    it(`should answer with status 200,
+        an array with a chosen length
+        and with songs order by descending score.`, async () => {
+
+        const body = validRecommendation();
+
+        // create five recomendations
+
+        for( let i = 0; i < 5; i++){
+            await supertest(app).post("/recommendations").send(body); 
+        }
+
+        // upvotes five times to recommendation with id = 5
+
+        let songId = 5;
+
+        for (let i = 0; i < 5; i++ ){
+            await supertest(app).post(`/recommendations/${songId}/upvote`);
+        }
+
+        // upvotes three times to recommendation with id = 3
+
+        songId = 3;
+
+        for (let i = 0; i < 3; i++ ){
+            await supertest(app).post(`/recommendations/${songId}/upvote`);
+        }
+
+        const response = await supertest(app).get("/recommendations/top/3");
+
+        expect(response.status).toBe(200);
+
+        expect(response.body).toEqual(expect.arrayContaining([
+            {
+                id: 5,
+                name: "Smells like teen spirit",
+                url: "http://www.youtube.com/video/123123",
+                score: 5
+            },
+            {
+                id: 3,
+                name: "Smells like teen spirit",
+                url: "http://www.youtube.com/video/123123",
+                score: 3
+            },
+            {
+                id: 1,
+                name: "Smells like teen spirit",
+                url: "http://www.youtube.com/video/123123",
+                score: 0
+            },
+        ]));
     });
 });
 

@@ -59,3 +59,21 @@ export async function getRandom(req: Request, res: Response){
         res.sendStatus(500)
     }
 }
+
+export async function getTop(req: Request, res: Response){
+    try {
+        
+        const amount = parseInt(req.params.amount);
+
+        if(!amount){
+            return res.sendStatus(400);
+        }
+
+        const topSongs = await recommendationService.getLimitedTopSongs(amount);
+
+        res.send(topSongs);
+    } catch(err) {
+        console.log(err);
+        res.sendStatus(500)
+    }
+}

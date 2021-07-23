@@ -72,3 +72,11 @@ export async function getRandomSongs(){
     );
     return randomSongs.rows;
 }
+
+export async function getTopSongs(){
+    const topSongs = await connection.query(
+        `SELECT * FROM songs 
+        ORDER BY score DESC`
+    );
+    return topSongs.rows;
+}

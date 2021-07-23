@@ -50,3 +50,11 @@ export async function getRandom(){
 
     return recommendations[index];
 }
+
+export async function getLimitedTopSongs(amount: number){
+    const songs = await recommendationRepository.getTopSongs();
+
+    const limitedSongs = songs.slice(0,amount);
+
+    return limitedSongs;
+}
