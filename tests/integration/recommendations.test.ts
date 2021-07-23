@@ -27,6 +27,7 @@ describe("POST /recommendations", () => {
         const body = invalidRecommendation();
 
         const response = await supertest(app).post("/recommendations").send(body);
+
         expect(response.status).toBe(400);
     });
 
@@ -101,7 +102,7 @@ describe("POST /recommendations/:id/downvote", () => {
         expect(response.status).toBe(200);
     });
 
-    it("should answer with status 200 when a song get vote quantity less than -5, then this song and its votes get deleted.", async () => {
+    it("should answer with status 200 and text 'deleted' when a song get vote quantity less than -5, then this song get deleted.", async () => {
 
         const body = validRecommendation();
 
@@ -114,8 +115,36 @@ describe("POST /recommendations/:id/downvote", () => {
         }
 
         const response = await supertest(app).post(`/recommendations/${newSongId}/downvote`);
-
+        expect(response.status).toBe(200);
         expect(response.text).toBe("deleted");
+    });    
+});
+
+describe("GET /recommendations/random", () => {
+
+    it("should answer with status 404 if no song was found on database.", async () => {
+
+        const response = await supertest(app).get("/recommendations/random");
+        expect(response.status).toBe(404);
+    });
+
+    it("should answer with status 200 if at least one song was found on database.", async () => {
+
+        const body = validRecommendation();
+
+        const lowScoreRecommendation = await supertest(app).post("/recommendations").send(body);
+
+        let highScoreRecommendation = await supertest(app).post("/recommendations").send(body);
+
+        const highScoreSongId = highScoreRecommendation.body.id;
+
+        for (let i = 0; i < 11; i++ ){
+            await supertest(app).post(`/recommendations/${highScoreSongId}/upvote`);
+        }
+
+        const response = await supertest(app).get("/recommendations/random");
+
+        expect(response.status).toBe(200);
     });
 });
 

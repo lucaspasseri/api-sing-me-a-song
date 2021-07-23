@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, response, Response } from "express";
 import * as recommendationService from "../services/recommendationService";
 import { recommendationSchema } from "../schemas/recommendationSchema";
 
@@ -47,11 +47,13 @@ export async function vote(req: Request, res: Response){
 export async function getRandom(req: Request, res: Response){
     try {
         
-        const randomSong = await recommendationService.getRandom();
+        const randomSongs = await recommendationService.getRandom();
 
-        console.log(randomSong);
+        if(!randomSongs){
+            return res.sendStatus(404);
+        }
 
-        res.send(randomSong);
+        res.send(randomSongs);
     } catch(err) {
         console.log(err);
         res.sendStatus(500)

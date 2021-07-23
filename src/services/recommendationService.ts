@@ -4,9 +4,6 @@ export async function newOne(name: string, youtubeLink: string){
 
     const newSong = await recommendationRepository.newSong(name, youtubeLink);
 
-    const songId = newSong.id;
-
-    const initializeVote = await recommendationRepository.initializeVote(songId);
     return newSong;
 }
 
@@ -39,6 +36,14 @@ export async function getRandom(){
         recommendations = await recommendationRepository.getHighRankingSongs();
     } else {
         recommendations = await recommendationRepository.getLowRankingSongs();
+    }
+
+    if(recommendations.length === 0) {
+        recommendations = await recommendationRepository.getRandomSongs();
+    }
+
+    if(recommendations.length === 0) {
+        return false;
     }
 
     const index = randomIndex(recommendations.length);
