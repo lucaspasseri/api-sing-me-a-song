@@ -58,3 +58,10 @@ export async function getLimitedTopSongs(amount: number){
 
     return limitedSongs;
 }
+
+export async function newOneWithGenres(name: string, youtubeLink: string, genresIds: any){
+
+    const newSong = await recommendationRepository.newSongWithGenres(name, youtubeLink, genresIds);
+
+    return newSong;
+}

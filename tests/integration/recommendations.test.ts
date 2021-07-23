@@ -1,4 +1,3 @@
-import { any } from "joi";
 import supertest from "supertest";
 import app from "../../src/app";
 import "../../src/setup";

@@ -80,3 +80,25 @@ export async function getTopSongs(){
     );
     return topSongs.rows;
 }
+
+export async function newSongWithGenres(name: string, youtubeLink: string, genresIds: any){
+    const newSong = await connection.query(
+        `INSERT INTO songs (name, url, score) 
+        VALUES ($1, $2, $3) RETURNING *`, [name, youtubeLink, 0]
+    );
+
+    console.log(newSong.rows);
+
+    console.log(genresIds);
+
+    for(let i = 0; i < genresIds.length; i++){
+        await connection.query(
+            `INSERT INTO songs_genres ("songId", "genreId")
+            VALUES ($1, $2) RETURNING *`, [newSong.rows[0].id,genresIds[i]]
+        );
+    }
+    
+    newSong.rows[0].genresIds = genresIds;
+
+    return newSong.rows[0];
+}

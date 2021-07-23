@@ -1,6 +1,7 @@
-import { Request, response, Response } from "express";
+import { Request, Response } from "express";
 import * as recommendationService from "../services/recommendationService";
 import { recommendationSchema } from "../schemas/recommendationSchema";
+import { recommendationWithGenresSchema } from "../schemas/recommendationsWithGenresSchema";
 
 export async function create(req: Request, res: Response){
     try{
@@ -75,5 +76,25 @@ export async function getTop(req: Request, res: Response){
     } catch(err) {
         console.log(err);
         res.sendStatus(500)
+    }
+}
+
+export async function createWithGenres(req: Request, res: Response){
+    try{
+        const validationErros = recommendationWithGenresSchema.validate(req.body).error;
+
+        if(validationErros) return res.sendStatus(400);
+
+        const {name, youtubeLink, genresIds} = req.body;
+
+        const success = await recommendationService.newOneWithGenres(name, youtubeLink, genresIds);
+
+        if(!success){
+            return res.sendStatus(501);
+        }
+        res.send(success);
+    } catch(err){
+        console.log(err);
+        res.sendStatus(500);
     }
 }
