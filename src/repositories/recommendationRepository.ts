@@ -61,3 +61,21 @@ export async function vote(songId: number, type: string){
 
     return vote?.rows[0];
 }
+
+export async function getHighRankingSongs(){
+    const highRankingSongs = await connection.query(
+        `SELECT * FROM songs
+        JOIN votes ON songs.id = votes."songId"
+        WHERE quantity > 10`
+    );
+    return highRankingSongs.rows;
+}
+
+export async function getLowRankingSongs(){
+    const lowRankingSongs = await connection.query(
+        `SELECT * FROM songs
+        JOIN votes ON songs.id = votes."songId"
+        WHERE quantity <= 10`
+    );
+    return lowRankingSongs.rows;
+}

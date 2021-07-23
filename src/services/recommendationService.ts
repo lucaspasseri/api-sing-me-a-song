@@ -25,3 +25,23 @@ export async function vote(songId: number, path: string){
 
     return success;
 }
+
+function randomIndex(recommendationsLength: number){
+    return Math.floor(Math.random()* (recommendationsLength));
+}
+
+export async function getRandom(){
+    let recommendations;
+
+    const seventyPercentOfTheTime = (Math.random()*10 > 3);
+
+    if(seventyPercentOfTheTime){
+        recommendations = await recommendationRepository.getHighRankingSongs();
+    } else {
+        recommendations = await recommendationRepository.getLowRankingSongs();
+    }
+
+    const index = randomIndex(recommendations.length);
+
+    return recommendations[index];
+}

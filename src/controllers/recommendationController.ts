@@ -43,3 +43,17 @@ export async function vote(req: Request, res: Response){
         res.sendStatus(500);
     }
 }
+
+export async function getRandom(req: Request, res: Response){
+    try {
+        
+        const randomSong = await recommendationService.getRandom();
+
+        console.log(randomSong);
+
+        res.send(randomSong);
+    } catch(err) {
+        console.log(err);
+        res.sendStatus(500)
+    }
+}
