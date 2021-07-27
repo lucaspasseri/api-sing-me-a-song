@@ -102,8 +102,8 @@ describe("POST /recommendations/:id/downvote", () => {
         expect(response.status).toBe(200);
     });
 
-    it(`should answer with status 200 and 
-        text 'deleted' when a song get vote quantity less than -5,
+    it(`should answer with status 400
+        when a song get vote quantity less than -5,
         then this song get deleted.`, async () => {
 
         const body = validRecommendation();
@@ -117,8 +117,7 @@ describe("POST /recommendations/:id/downvote", () => {
         }
 
         const response = await supertest(app).post(`/recommendations/${newSongId}/downvote`);
-        expect(response.status).toBe(200);
-        expect(response.text).toBe("deleted");
+        expect(response.status).toBe(400);
     });    
 });
 

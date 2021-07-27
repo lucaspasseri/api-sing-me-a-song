@@ -1,14 +1,11 @@
 import express from "express";
 import cors from "cors";
-import * as testController from  "./controllers/testController";
 import * as recommendationController from "./controllers/recommendationController";
 import * as genresController from "./controllers/genresController";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-
-app.get("/test", testController.testing);
 
 app.post("/recommendations", recommendationController.create);
 

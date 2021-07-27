@@ -1,16 +1,17 @@
 import * as recommendationRepository from "../repositories/recommendationRepository";
+import {Song} from "../interfaces/Song";
 
-export async function newOne(name: string, youtubeLink: string){
+export async function newOne(name: string, youtubeLink: string):Promise<Song>{
 
     const newSong = await recommendationRepository.newSong(name, youtubeLink);
 
     return newSong;
 }
 
-export async function vote(songId: number, path: string){
+export async function vote(songId: number, path: string):Promise<Song>{
     const pathArray = path.split("/");
 
-    let type;
+    let type:string;
 
     if(pathArray.includes("upvote")){
         type = "upvote";
@@ -23,11 +24,11 @@ export async function vote(songId: number, path: string){
     return success;
 }
 
-function randomIndex(recommendationsLength: number){
+function randomIndex(recommendationsLength: number):number{
     return Math.floor(Math.random()* (recommendationsLength));
 }
 
-export async function getRandom(){
+export async function getRandom():Promise<Song>{
     let recommendations;
 
     const seventyPercentOfTheTime = (Math.random()*10 > 3);
@@ -43,7 +44,7 @@ export async function getRandom(){
     }
 
     if(recommendations.length === 0) {
-        return false;
+        return null;
     }
 
     const index = randomIndex(recommendations.length);
@@ -51,7 +52,7 @@ export async function getRandom(){
     return recommendations[index];
 }
 
-export async function getLimitedTopSongs(amount: number){
+export async function getLimitedTopSongs(amount: number):Promise<Song[]>{
     const songs = await recommendationRepository.getTopSongs();
 
     const limitedSongs = songs.slice(0,amount);
@@ -59,7 +60,7 @@ export async function getLimitedTopSongs(amount: number){
     return limitedSongs;
 }
 
-export async function newOneWithGenres(name: string, youtubeLink: string, genresIds: any){
+export async function newOneWithGenres(name: string, youtubeLink: string, genresIds: any):Promise<Song>{
 
     const newSong = await recommendationRepository.newSongWithGenres(name, youtubeLink, genresIds);
 

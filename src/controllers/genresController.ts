@@ -1,4 +1,4 @@
-import { Request, response, Response } from "express";
+import { Request, Response } from "express";
 import * as genreService from "../services/genreService";
 import { genreSchema } from "../schemas/genreSchema";
 

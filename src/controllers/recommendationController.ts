@@ -2,6 +2,13 @@ import { Request, Response } from "express";
 import * as recommendationService from "../services/recommendationService";
 import { recommendationSchema } from "../schemas/recommendationSchema";
 import { recommendationWithGenresSchema } from "../schemas/recommendationsWithGenresSchema";
+import { ReplOptions } from "node:repl";
+
+interface Body {
+    name: string;
+    youtubeLink: string;
+};
+
 
 export async function create(req: Request, res: Response){
     try{
@@ -9,7 +16,8 @@ export async function create(req: Request, res: Response){
 
         if(validationErros) return res.sendStatus(400);
 
-        const {name, youtubeLink} = req.body;
+        const body:Body = req.body;
+        const {name, youtubeLink} = body;
 
         const success = await recommendationService.newOne(name, youtubeLink);
 
@@ -79,14 +87,21 @@ export async function getTop(req: Request, res: Response){
     }
 }
 
+interface BodyWithGenresIds {
+    name:string;
+    youtubeLink:string;
+    genresIds:[]
+} 
+
 export async function createWithGenres(req: Request, res: Response){
     try{
         const validationErros = recommendationWithGenresSchema.validate(req.body).error;
 
         if(validationErros) return res.sendStatus(400);
 
-        const {name, youtubeLink, genresIds} = req.body;
-
+        const body: BodyWithGenresIds = req.body;
+        const {name, youtubeLink, genresIds} = body;
+        
         const success = await recommendationService.newOneWithGenres(name, youtubeLink, genresIds);
 
         if(!success){
